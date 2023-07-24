@@ -2,7 +2,7 @@ from dotenv import load_dotenv
 import os
 import base64
 import json
-from requests import post
+from requests import post, get
 
 load_dotenv()
 
@@ -26,5 +26,34 @@ def getToken():
     token = jsonResult["access_token"]
     return token
 
+def getAuthorizationHeader(token):
+    return {"Authorization": "Bearer " + token}
+
+def searchForArtist(token, artistName):
+    url = "https://api.spotify.com/v1/search"
+    headers = getAuthorizationHeader(token)
+    query = f"?q={artistName}&type=artist&limit=1"
+
+    queryURL = url + query
+    result = get(queryURL, headers=headers)
+    jsonResult = json.loads(result.content)["artists"]["items"]
+    if len(jsonResult) == 0:
+        print("No Sauze")
+        return None
+    return jsonResult[0]
+
+def getSongsByArtist(token,artistID):
+    url = "https://api.spotify.com/v1/artists/{}/top-tracks?country=US".format(artistID)
+    headers = getAuthorizationHeader(token)
+    result = get(url, headers = headers)
+    jsonResult = json.loads(result.content)["tracks"]
+    return jsonResult
+
 token = getToken()
-print(token)
+artist = searchForArtist(token, "Frank Ocean")
+artistID = artist["id"]
+print(artistID)
+songs = getSongsByArtist(token, artistID)
+
+for i, song in enumerate(songs):
+    print("{}. {}".format(i+1,song['name']))
