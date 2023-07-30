@@ -39,7 +39,15 @@ class SpotipyObject:
 
     def printCurrentlyPlaying(self):
         self.currentlyPlaying = self.spotifyObject.currently_playing()
-        if self.currentlyPlaying == None: return
+
+        if self.currentlyPlaying == None: 
+            print("jani")
+            return
+
+        if self.currentlyPlaying["currently_playing_type"] == 'ad': 
+            print("jani")
+            return
+
         self.currentArtist = self.currentlyPlaying['item']['artists'][0]['name']
         self.currentSong = self.currentlyPlaying['item']['name']
         print(f"{self.currentSong} - {self.currentArtist}")
