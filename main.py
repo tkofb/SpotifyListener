@@ -10,7 +10,7 @@ from treeVisualizer import visualizeDict
 class SpotipyObject:
 
     def __init__(self):
-        self.spotifyObject = self.requestUserAuthorization()
+        self.requestUserAuthorization()
 
     def requestUserAuthorization(self):
         load_dotenv()
@@ -23,8 +23,10 @@ class SpotipyObject:
         self.scopes = ["user-read-currently-playing", "user-library-read"]
         self.scope = " ".join(self.scopes)
 
-        spotifyObject = spotipy.Spotify(auth_manager=SpotifyOAuth(scope=self.scope, client_id=self.clientId, client_secret=self.clientSecret, redirect_uri="http://localhost:8888/callback"))
-        return spotifyObject
+        self.spotifyObject = spotipy.Spotify(auth_manager=SpotifyOAuth( 
+            scope=self.scope, client_id=self.clientId, client_secret=self.clientSecret, redirect_uri="http://localhost:8888/callback", 
+            open_browser = True))
+        return
 
 
     def addScope(self,scope):
@@ -37,25 +39,8 @@ class SpotipyObject:
 
     def printCurrentlyPlaying(self):
         self.currentlyPlaying = self.spotifyObject.currently_playing()
-        self.currentArtist = module.currentlyPlaying['item']['artists'][0]['name']
-        self.currentSong = module.currentlyPlaying['item']['name']
+        if self.currentlyPlaying == None: return
+        self.currentArtist = self.currentlyPlaying['item']['artists'][0]['name']
+        self.currentSong = self.currentlyPlaying['item']['name']
         print(f"{self.currentSong} - {self.currentArtist}")
-        
-
     
-
-    
-
-
-module = SpotipyObject()
-module.addScope("hola")
-print(module.scope)
-module.deleteScope("hola")
-print(module.scope)
-module.printCurrentlyPlaying()
-print(visualizeDict(module.currentlyPlaying))
-
-# currentlyPlaying = sp.current_user_playing_track()
-# print(currentlyPlaying)
-# print(type(currentlyPlaying))
-# visualizeDict(currentlyPlaying)
