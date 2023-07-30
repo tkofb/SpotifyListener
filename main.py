@@ -2,33 +2,60 @@ from dotenv import load_dotenv
 import os
 import json
 import requests
+import spotipy
+from spotipy.oauth2 import SpotifyOAuth
+from treeVisualizer import visualizeDict
 
-load_dotenv()
 
-clientId = os.getenv("CLIENT_ID")
-clientSecret = os.getenv("CLIENT_SECRET")
-tuiClientId =  os.getenv("TUI_CLIENT_ID")
-tuiClientSecret = os.getenv("TUI_CLIENT_SECRET")
+class SpotipyObject:
 
-manualURL = "https://api.spotify.com/authorize?client_id=a56254b176ed4cf3b19c23b8c01c8507&response_type=code&redirect_uri=http%3A%2F%2Flocalhost%3A8888%2Fcallback"
-scope = "&scope=user-read-currently-playing"
+    def __init__(self):
+        self.spotifyObject = self.requestUserAuthorization()
 
-def requestUserAuthorization():
-    url = "http://api.spotify.com/authorize"
+    def requestUserAuthorization(self):
+        load_dotenv()
 
-    query = {
-        "client_id": clientId,
-        "response_type": "code",
-        "redirect_uri": "http://localhost:8888/callback",
-        "scope" : "user-read-currently-playing"
-    }
+        self.clientId = os.getenv("CLIENT_ID")
+        self.clientSecret = os.getenv("CLIENT_SECRET")
+        self.tuiClientId =  os.getenv("TUI_CLIENT_ID")
+        self.tuiClientSecret = os.getenv("TUI_CLIENT_SECRET")
 
-    result = requests.get(url, params=query)
+        self.scopes = ["user-read-currently-playing", "user-library-read"]
+        self.scope = " ".join(self.scopes)
+
+        spotifyObject = spotipy.Spotify(auth_manager=SpotifyOAuth(scope=self.scope, client_id=self.clientId, client_secret=self.clientSecret, redirect_uri="http://localhost:8888/callback"))
+        return spotifyObject
+
+
+    def addScope(self,scope):
+        self.scopes.append(scope)
+        self.scope = " ".join(self.scopes)
+
+    def deleteScope(self,scope):
+        self.scopes.remove(scope)
+        self.scope = " ".join(self.scopes)
+
+    def printCurrentlyPlaying(self):
+        self.currentlyPlaying = self.spotifyObject.currently_playing()
+        self.currentArtist = module.currentlyPlaying['item']['artists'][0]['name']
+        self.currentSong = module.currentlyPlaying['item']['name']
+        print(f"{self.currentSong} - {self.currentArtist}")
+        
+
     
-    print(result.request.url == url + scope)
-    print(result.request.url)
-    print(manualURL+scope)
-    print(query)
-    print(result.status_code)
 
-requestUserAuthorization()
+    
+
+
+module = SpotipyObject()
+module.addScope("hola")
+print(module.scope)
+module.deleteScope("hola")
+print(module.scope)
+module.printCurrentlyPlaying()
+print(visualizeDict(module.currentlyPlaying))
+
+# currentlyPlaying = sp.current_user_playing_track()
+# print(currentlyPlaying)
+# print(type(currentlyPlaying))
+# visualizeDict(currentlyPlaying)
