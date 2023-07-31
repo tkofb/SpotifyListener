@@ -17,6 +17,7 @@ class SpotipyObject:
 
         self.clientId = os.getenv("CLIENT_ID")
         self.clientSecret = os.getenv("CLIENT_SECRET")
+
         self.tuiClientId =  os.getenv("TUI_CLIENT_ID")
         self.tuiClientSecret = os.getenv("TUI_CLIENT_SECRET")
 
@@ -32,23 +33,49 @@ class SpotipyObject:
     def addScope(self,scope):
         self.scopes.append(scope)
         self.scope = " ".join(self.scopes)
+        self.requestUserAuthorization()
 
     def deleteScope(self,scope):
         self.scopes.remove(scope)
         self.scope = " ".join(self.scopes)
+        self.requestUserAuthorization()
+
 
     def printCurrentlyPlaying(self):
-        self.currentlyPlaying = self.spotifyObject.currently_playing()
+        if self.songPlaying():
+            self.currentArtist = self.currentlyPlaying['item']['artists'][0]['name']
+            self.currentSong = self.currentlyPlaying['item']['name']
+            print(f"{self.currentSong} - {self.currentArtist}")
 
+
+    def songPlaying(self):
+        self.currentlyPlaying = self.spotifyObject.currently_playing()
+            
         if self.currentlyPlaying == None: 
             print("jani")
-            return
+            return False
 
-        if self.currentlyPlaying["currently_playing_type"] == 'ad': 
+        if self.currentlyPlaying["currently_playing_type"] != 'track': 
             print("jani")
-            return
+            return False
+        
+        return True
 
-        self.currentArtist = self.currentlyPlaying['item']['artists'][0]['name']
-        self.currentSong = self.currentlyPlaying['item']['name']
-        print(f"{self.currentSong} - {self.currentArtist}")
+    def nextSong(self):
+        necessaryScope = "user-modify-playback-state"
+        if necessaryScope not in self.scopes:
+            self.addScope(necessaryScope)
+        self.spotifyObject.next_track()
+        
+        
+    def toggleShuffle(self):
+        pass
+
+    def pauseSong(self):
+        pass
+
+    def previousSong(self):
+        pass
     
+    def getCurrentDevice(self):
+        pass
