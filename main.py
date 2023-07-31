@@ -29,7 +29,6 @@ class SpotipyObject:
             cache_path='/home/jani/Projects/SpotifyListener/.cache-tkogds@gmail.com'))
         return
 
-
     def addScope(self,scope):
         self.scopes.append(scope)
         self.scope = " ".join(self.scopes)
@@ -46,36 +45,52 @@ class SpotipyObject:
             self.currentArtist = self.currentlyPlaying['item']['artists'][0]['name']
             self.currentSong = self.currentlyPlaying['item']['name']
             print(f"{self.currentSong} - {self.currentArtist}")
+        else:
+            print("jani")
 
 
     def songPlaying(self):
         self.currentlyPlaying = self.spotifyObject.currently_playing()
             
         if self.currentlyPlaying == None: 
-            print("jani")
             return False
 
         if self.currentlyPlaying["currently_playing_type"] != 'track': 
-            print("jani")
             return False
         
         return True
 
     def nextSong(self):
-        necessaryScope = "user-modify-playback-state"
-        if necessaryScope not in self.scopes:
-            self.addScope(necessaryScope)
-        self.spotifyObject.next_track()
-        
+        if self.songPlaying():
+            necessaryScope = "user-modify-playback-state"
+            if necessaryScope not in self.scopes:
+                self.addScope(necessaryScope)
+                
+            self.spotifyObject.next_track()
         
     def toggleShuffle(self):
-        pass
+        if self.songPlaying():
+            necessaryScope = "user-modify-playback-state"
+            if necessaryScope not in self.scopes:
+                self.addScope(necessaryScope)
+                
+            self.spotifyObject.shuffle(True)
 
     def pauseSong(self):
-        pass
+        if self.songPlaying():
+            necessaryScope = "user-modify-playback-state"
+            if necessaryScope not in self.scopes:
+                self.addScope(necessaryScope)
+                
+            self.spotifyObject.pause_playback()
 
     def previousSong(self):
-        pass
+        if self.songPlaying():
+            necessaryScope = "user-modify-playback-state"
+            if necessaryScope not in self.scopes:
+                self.addScope(necessaryScope)
+                
+            self.spotifyObject.previous_track()
     
     def getCurrentDevice(self):
         pass
