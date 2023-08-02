@@ -24,10 +24,8 @@ class SpotipyObject:
         self.scopes = ["user-read-currently-playing", "user-library-read"]
         self.scope = " ".join(self.scopes)
 
-        self.spotifyObject = spotipy.Spotify(auth_manager=SpotifyOAuth( 
-            scope=self.scope, client_id=self.clientId, client_secret=self.clientSecret, redirect_uri="http://localhost:8888/callback", 
-            cache_path='/home/jani/Projects/SpotifyListener/.cache-tkogds@gmail.com'))
-        return
+        
+        
 
     def addScope(self,scope):
         self.scopes.append(scope)
